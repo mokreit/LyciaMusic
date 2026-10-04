@@ -461,6 +461,7 @@ export interface AppSettings {
   showCoverReflection: boolean;
   coverOffsetX: number;
   coverOffsetY: number;
+  coverScale: number;
   enableScrollToTopButton: boolean;
   libraryMinDurationSeconds: number;
   // Deprecated compat field. Retained only for legacy config deserialization.

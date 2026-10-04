@@ -4,7 +4,9 @@ import { createPinia, setActivePinia } from 'pinia';
 import {
   createDefaultAppSettings,
   MAX_COVER_OFFSET_X,
+  MAX_COVER_SCALE,
   MIN_COVER_OFFSET_Y,
+  MIN_COVER_SCALE,
   mergeAppSettings,
   useSettingsStore,
 } from './store';
@@ -364,6 +366,19 @@ describe('settings store', () => {
 
     expect(merged.coverOffsetX).toBe(MAX_COVER_OFFSET_X);
     expect(merged.coverOffsetY).toBe(MIN_COVER_OFFSET_Y);
+  });
+
+  it('defaults the cover scale to 100%', () => {
+    const settingsStore = useSettingsStore();
+
+    expect(settingsStore.settings.coverScale).toBe(1);
+  });
+
+  it('clamps the persisted cover scale', () => {
+    const settingsStore = useSettingsStore();
+
+    expect(mergeAppSettings(settingsStore.settings, { coverScale: 99 }).coverScale).toBe(MAX_COVER_SCALE);
+    expect(mergeAppSettings(settingsStore.settings, { coverScale: 0 }).coverScale).toBe(MIN_COVER_SCALE);
   });
 
   it('merges desktop lyrics settings while keeping the desktop defaults intact', () => {

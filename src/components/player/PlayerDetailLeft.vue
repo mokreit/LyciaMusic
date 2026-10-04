@@ -22,6 +22,7 @@ const { playQueuePaths, tempQueuePaths } = storeToRefs(playbackStore);
 const showCoverReflection = computed(() => settings.value.showCoverReflection);
 const coverOffsetX = computed(() => settings.value.coverOffsetX);
 const coverOffsetY = computed(() => settings.value.coverOffsetY);
+const coverScale = computed(() => settings.value.coverScale);
 
 const showContextMenu = ref(false);
 const contextMenuX = ref(0);
@@ -179,6 +180,7 @@ defineExpose({ detailCoverRef });
         transform: props.isExpanded
           ? `translate(${coverOffsetX}%, ${coverOffsetY}%) scale(1)`
           : 'scale(1)',
+        width: props.isExpanded ? `calc(clamp(220px, 45vh, 580px) * ${coverScale})` : undefined,
         opacity: 1,
       }"
     >

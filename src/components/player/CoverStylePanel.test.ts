@@ -19,6 +19,13 @@ describe('CoverStylePanel', () => {
     expect(source).toContain("resetCoverOffset('y')");
   });
 
+  it('offers a cover size slider backed by the persisted scale', () => {
+    expect(source).toContain('封面大小');
+    expect(source).toContain('coverScale');
+    expect(source).toContain('handleScaleInput');
+    expect(source).toContain('resetCoverScale');
+  });
+
   it('reuses the shared player style panel placement', () => {
     expect(source).toContain('cover-style-panel');
     expect(source).toContain('showCoverStylePanel');

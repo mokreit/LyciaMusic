@@ -13,4 +13,9 @@ describe('PlayerDetailLeft cover reflection', () => {
     expect(source).toContain('const coverOffsetY = computed(() => settings.value.coverOffsetY);');
     expect(source).toContain('translate(${coverOffsetX}%, ${coverOffsetY}%) scale(1)');
   });
+
+  it('applies the persisted cover scale to the cover width', () => {
+    expect(source).toContain('const coverScale = computed(() => settings.value.coverScale);');
+    expect(source).toContain('calc(clamp(220px, 45vh, 580px) * ${coverScale})');
+  });
 });

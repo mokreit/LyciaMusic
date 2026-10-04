@@ -5,16 +5,21 @@ import { showCoverStylePanel } from '../../composables/coverStylePanel';
 import {
   DEFAULT_COVER_OFFSET_X,
   DEFAULT_COVER_OFFSET_Y,
+  DEFAULT_COVER_SCALE,
   MAX_COVER_OFFSET_X,
   MAX_COVER_OFFSET_Y,
+  MAX_COVER_SCALE,
   MIN_COVER_OFFSET_X,
   MIN_COVER_OFFSET_Y,
+  MIN_COVER_SCALE,
   clampCoverOffsetX,
   clampCoverOffsetY,
+  clampCoverScale,
   useSettingsStore,
 } from '../../features/settings/store';
 
 const COVER_OFFSET_STEP = 1;
+const COVER_SCALE_STEP = 0.05;
 
 const settingsStore = useSettingsStore();
 const coverPanelRef = ref<HTMLElement | null>(null);
@@ -22,6 +27,13 @@ const coverPanelRef = ref<HTMLElement | null>(null);
 const showCoverReflection = computed(() => settingsStore.settings.showCoverReflection);
 const coverOffsetX = computed(() => settingsStore.settings.coverOffsetX);
 const coverOffsetY = computed(() => settingsStore.settings.coverOffsetY);
+const coverScale = computed(() => settingsStore.settings.coverScale);
+
+const coverScalePercent = computed(() => `${Math.round(coverScale.value * 100)}%`);
+
+const coverScaleProgress = computed(() => (
+  ((coverScale.value - MIN_COVER_SCALE) / (MAX_COVER_SCALE - MIN_COVER_SCALE)) * 100
+));
 
 const horizontalOffsetPercent = computed(() => formatOffsetValue(coverOffsetX.value));
 const verticalOffsetPercent = computed(() => formatOffsetValue(coverOffsetY.value));
@@ -59,6 +71,17 @@ function handleOffsetInput(axis: 'x' | 'y', event: Event) {
 
 function resetCoverOffset(axis: 'x' | 'y') {
   updateCoverOffset(axis, axis === 'x' ? DEFAULT_COVER_OFFSET_X : DEFAULT_COVER_OFFSET_Y);
+}
+
+function handleScaleInput(event: Event) {
+  const target = event.target as HTMLInputElement | null;
+  if (!target) return;
+
+  settingsStore.patchSettings({ coverScale: clampCoverScale(Number(target.value)) });
+}
+
+function resetCoverScale() {
+  settingsStore.patchSettings({ coverScale: DEFAULT_COVER_SCALE });
 }
 
 function handleClickOutside(event: MouseEvent) {
@@ -116,6 +139,36 @@ onUnmounted(() => {
               />
             </button>
           </div>
+
+          <div class="mt-6 mb-3">
+            <div class="text-[9px] font-semibold uppercase tracking-[0.3em] text-white/30">Size</div>
+            <div class="mt-1.5 flex items-center justify-between gap-3">
+              <span class="text-[13px] font-medium text-white/85">封面大小</span>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-medium tabular-nums text-white/60">{{ coverScalePercent }}</span>
+                <button
+                  v-if="coverScale !== DEFAULT_COVER_SCALE"
+                  type="button"
+                  class="flex h-5 w-5 items-center justify-center rounded-full text-white/40 transition hover:bg-white/10 hover:text-white"
+                  @click="resetCoverScale"
+                  title="重置封面大小"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <input
+            class="font-size-slider h-1 w-full cursor-pointer appearance-none rounded-full"
+            :style="{ background: `linear-gradient(to right, rgba(255,255,255,0.85) ${coverScaleProgress}%, rgba(255,255,255,0.12) ${coverScaleProgress}%)` }"
+            type="range"
+            :min="MIN_COVER_SCALE"
+            :max="MAX_COVER_SCALE"
+            :step="COVER_SCALE_STEP"
+            :value="coverScale"
+            @input="handleScaleInput"
+          />
 
           <div class="mt-6 mb-3">
             <div class="text-[9px] font-semibold uppercase tracking-[0.3em] text-white/30">Position</div>
@@ -188,9 +241,14 @@ onUnmounted(() => {
 <style scoped>
 .cover-style-panel {
   --panel-width: min(320px, calc(34vw - 24px));
-  --shift-vw: 14vw;
+  /* 镜像歌词样式面板相对左侧边框的距离，改为相对右侧边框 */
+  --panel-inset: calc(
+    40px + max(40vw - 12.8px, 300px)
+    - min(14vw, max(40vw, 300px) + 24px - var(--panel-width))
+    - var(--panel-width)
+  );
   width: var(--panel-width);
-  right: calc(100% + min(var(--shift-vw), max(40vw, 300px) + 40px - var(--panel-width) - 16px));
+  right: max(24px, var(--panel-inset));
 }
 
 .font-panel-enter-active,
