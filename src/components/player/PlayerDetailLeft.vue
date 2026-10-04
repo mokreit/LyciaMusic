@@ -20,6 +20,8 @@ const { settings } = useSettings();
 const { playQueuePaths, tempQueuePaths } = storeToRefs(playbackStore);
 
 const showCoverReflection = computed(() => settings.value.showCoverReflection);
+const coverOffsetX = computed(() => settings.value.coverOffsetX);
+const coverOffsetY = computed(() => settings.value.coverOffsetY);
 
 const showContextMenu = ref(false);
 const contextMenuX = ref(0);
@@ -174,7 +176,9 @@ defineExpose({ detailCoverRef });
         boxShadow: props.isExpanded && isPlaying
           ? `0 30px 60px -12px rgba(0,0,0,0.6), 0 18px 36px -18px rgba(0,0,0,0.7), 0 0 80px -20px ${dominantColors[0]}44` 
           : (props.isExpanded ? `0 10px 20px -5px rgba(0,0,0,0.4)` : 'none'),
-        transform: props.isExpanded ? (isPlaying ? 'scale(1)' : 'scale(1)') : 'scale(1)',
+        transform: props.isExpanded
+          ? `translate(${coverOffsetX}%, ${coverOffsetY}%) scale(1)`
+          : 'scale(1)',
         opacity: 1,
       }"
     >

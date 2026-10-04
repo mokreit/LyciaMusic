@@ -84,10 +84,9 @@ describe('LyricsView custom font import', () => {
     expect(source).toContain('resetLyricsSyncOffset');
   });
 
-  it('offers a cover reflection switch in the style panel', () => {
-    expect(source).toContain('封面倒影');
-    expect(source).toContain('showCoverReflection');
-    expect(source).toContain('toggleCoverReflection');
+  it('keeps cover styling out of the lyrics panel', () => {
+    expect(source).not.toContain('封面倒影');
+    expect(source).not.toContain('showCoverReflection');
   });
 
   it('switches the player lyrics renderer based on the persisted render mode', () => {

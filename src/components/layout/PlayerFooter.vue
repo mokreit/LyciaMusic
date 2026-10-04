@@ -3,6 +3,7 @@ import { AudioLines, Eye, EyeOff, SlidersHorizontal } from 'lucide-vue-next';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { useLibraryCollections } from '../../features/collections/useLibraryCollections';
 import { useLyrics } from '../../composables/lyrics';
+import { showCoverStylePanel } from '../../composables/coverStylePanel';
 import { usePlaybackController } from '../../features/playback/usePlaybackController';
 import AudioVisualizer from '../player/AudioVisualizer.vue';
 import SongHighlightMarkers from '../player/SongHighlightMarkers.vue';
@@ -76,6 +77,15 @@ const addProgressHighlight = async () => {
 const toggleLyrics = () => { showDesktopLyrics.value = !showDesktopLyrics.value; };
 const toggleLyricsPlayerSettings = () => {
   showLyricsPlayerSettingsPanel.value = !showLyricsPlayerSettingsPanel.value;
+  if (showLyricsPlayerSettingsPanel.value) {
+    showCoverStylePanel.value = false;
+  }
+};
+const toggleCoverStyleSettings = () => {
+  showCoverStylePanel.value = !showCoverStylePanel.value;
+  if (showCoverStylePanel.value) {
+    showLyricsPlayerSettingsPanel.value = false;
+  }
 };
 const isVisualizerEnabled = ref(localStorage.getItem('footer_visualizer_enabled') !== 'false');
 const isProgressHidden = ref(readStoredProgressHidden(localStorage));
@@ -533,6 +543,17 @@ onUnmounted(() => {
         title="播放队列"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+      </button>
+
+      <button
+        v-if="showPlayerDetail"
+        @mousedown.stop
+        @click.stop="toggleCoverStyleSettings"
+        class="transition-colors hover:scale-110 transform duration-200"
+        :class="showCoverStylePanel ? 'text-white' : 'text-white/80 hover:text-white'"
+        title="封面样式"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
       </button>
     </div>
 

@@ -459,6 +459,8 @@ export interface AppSettings {
   showQualityBadges: boolean;
   showSongComments: boolean;
   showCoverReflection: boolean;
+  coverOffsetX: number;
+  coverOffsetY: number;
   enableScrollToTopButton: boolean;
   libraryMinDurationSeconds: number;
   // Deprecated compat field. Retained only for legacy config deserialization.

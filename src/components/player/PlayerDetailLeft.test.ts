@@ -7,4 +7,10 @@ describe('PlayerDetailLeft cover reflection', () => {
     expect(source).toContain('const showCoverReflection = computed(() => settings.value.showCoverReflection);');
     expect(source).toContain('v-if="props.isExpanded && showCoverReflection"');
   });
+
+  it('applies the persisted cover position offsets to the cover transform', () => {
+    expect(source).toContain('const coverOffsetX = computed(() => settings.value.coverOffsetX);');
+    expect(source).toContain('const coverOffsetY = computed(() => settings.value.coverOffsetY);');
+    expect(source).toContain('translate(${coverOffsetX}%, ${coverOffsetY}%) scale(1)');
+  });
 });

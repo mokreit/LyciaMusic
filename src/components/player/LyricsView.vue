@@ -206,8 +206,6 @@ const renderModeExtraToggle = computed(() => (
       }
 ));
 
-const showCoverReflection = computed(() => settingsStore.settings.showCoverReflection);
-
 function clampFontScale(value: number) {
   return Math.min(MAX_PLAYER_FONT_SCALE, Math.max(MIN_PLAYER_FONT_SCALE, value));
 }
@@ -364,10 +362,6 @@ function toggleTranslation() {
 
 function toggleRomaji() {
   lyricsSettings.showRomaji = !lyricsSettings.showRomaji;
-}
-
-function toggleCoverReflection() {
-  settingsStore.patchSettings({ showCoverReflection: !showCoverReflection.value });
 }
 
 function handleFontScaleInput(event: Event) {
@@ -974,31 +968,6 @@ onUnmounted(() => {
             </button>
           </div>
 
-          <div class="mt-6 mb-3">
-            <div class="text-[9px] font-semibold uppercase tracking-[0.3em] text-white/30">Cover</div>
-          </div>
-
-          <div class="flex items-center justify-between gap-3">
-            <div class="min-w-0">
-              <div class="text-[13px] font-medium text-white/85">封面倒影</div>
-              <div class="mt-0.5 text-[10px] leading-4 text-white/40">封面下方的玻璃倒影</div>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              :aria-checked="showCoverReflection"
-              title="封面倒影"
-              class="relative inline-flex h-6 w-11 flex-none items-center rounded-full transition-colors"
-              :class="showCoverReflection ? 'bg-white/80' : 'bg-white/15'"
-              @click="toggleCoverReflection"
-            >
-              <span
-                class="inline-block h-4 w-4 transform rounded-full transition duration-200 ease-in-out"
-                :class="showCoverReflection ? 'translate-x-6 bg-black/80' : 'translate-x-1 bg-white'"
-              />
-            </button>
-          </div>
-
           </div>
         </div>
       </transition>
@@ -1373,31 +1342,6 @@ onUnmounted(() => {
   background: rgba(236, 65, 65, 0.2);
   color: rgba(255, 255, 255, 0.96);
   outline: none;
-}
-
-.font-size-slider::-webkit-slider-thumb {
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 9999px;
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0,0,0,0.05);
-}
-
-.font-size-slider::-moz-range-thumb {
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  border: 0;
-  border-radius: 9999px;
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0,0,0,0.05);
-}
-
-.font-size-slider::-moz-range-track {
-  height: 4px;
-  border-radius: 9999px;
-  background: transparent;
 }
 
 .lyric-style-panel {
