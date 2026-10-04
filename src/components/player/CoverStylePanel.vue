@@ -241,14 +241,21 @@ onUnmounted(() => {
 <style scoped>
 .cover-style-panel {
   --panel-width: min(320px, calc(34vw - 24px));
+  --shift-vw: 14vw;
   /* 镜像歌词样式面板相对左侧边框的距离，改为相对右侧边框 */
   --panel-inset: calc(
     40px + max(40vw - 12.8px, 300px)
-    - min(14vw, max(40vw, 300px) + 24px - var(--panel-width))
+    - min(var(--shift-vw), max(40vw, 300px) + 24px - var(--panel-width))
     - var(--panel-width)
   );
   width: var(--panel-width);
   right: max(24px, var(--panel-inset));
+}
+
+@media (min-width: 1536px) {
+  .cover-style-panel {
+    --shift-vw: 22vw;
+  }
 }
 
 .font-panel-enter-active,
