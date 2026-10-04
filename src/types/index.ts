@@ -458,6 +458,7 @@ export interface AppSettings {
   showDesktopLyrics: boolean;
   showQualityBadges: boolean;
   showSongComments: boolean;
+  showCoverReflection: boolean;
   enableScrollToTopButton: boolean;
   libraryMinDurationSeconds: number;
   // Deprecated compat field. Retained only for legacy config deserialization.

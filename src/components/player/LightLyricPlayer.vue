@@ -216,6 +216,11 @@ function getLineFillStyle(visibleIndex: number) {
     return { '--line-progress': '0%' };
   }
 
+  // 关闭逐字效果时不做任何渐变，当前行直接整行常亮
+  if (!props.wordEffect) {
+    return { '--line-progress': '100%' };
+  }
+
   return { '--line-progress': `${Math.round(activeLineProgress.value * 10000) / 100}%` };
 }
 

@@ -132,6 +132,7 @@ export const defaultAppSettings: AppSettings = {
   showDesktopLyrics: false,
   showQualityBadges: true,
   showSongComments: true,
+  showCoverReflection: true,
   enableScrollToTopButton: true,
   libraryMinDurationSeconds: 0,
   // Deprecated compat field. Main folder-source behavior no longer depends on it.

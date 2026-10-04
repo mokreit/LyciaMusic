@@ -324,6 +324,22 @@ describe('settings store', () => {
     expect(merged.lyrics.playerRenderMode).toBe('amll');
   });
 
+  it('shows the cover reflection by default', () => {
+    const settingsStore = useSettingsStore();
+
+    expect(settingsStore.settings.showCoverReflection).toBe(true);
+  });
+
+  it('keeps a persisted cover reflection preference', () => {
+    const settingsStore = useSettingsStore();
+
+    const merged = mergeAppSettings(settingsStore.settings, {
+      showCoverReflection: false,
+    });
+
+    expect(merged.showCoverReflection).toBe(false);
+  });
+
   it('merges desktop lyrics settings while keeping the desktop defaults intact', () => {
     const settingsStore = useSettingsStore();
 

@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia';
 import { useCoverCache } from '../../composables/useCoverCache';
 import { usePlaybackController } from '../../features/playback/usePlaybackController';
 import { usePlaybackStore } from '../../features/playback/store';
+import { useSettings } from '../../features/settings/useSettings';
 import FooterContextMenu from "../overlays/FooterContextMenu.vue";
 
 const props = defineProps<{
@@ -15,7 +16,10 @@ const {
 } = usePlaybackController();
 const { getFullCoverUrl, loadFullCover, preloadFullCovers, retainFullCoverPaths } = useCoverCache();
 const playbackStore = usePlaybackStore();
+const { settings } = useSettings();
 const { playQueuePaths, tempQueuePaths } = storeToRefs(playbackStore);
+
+const showCoverReflection = computed(() => settings.value.showCoverReflection);
 
 const showContextMenu = ref(false);
 const contextMenuX = ref(0);
@@ -187,7 +191,7 @@ defineExpose({ detailCoverRef });
 
       <!-- Glass Table Reflection Layer -->
       <transition name="reflection-reveal" appear>
-        <div v-if="props.isExpanded" class="absolute top-[calc(100%+2px)] left-0 w-full h-[65%] pointer-events-none z-10 reflection-wrapper rounded-[inherit] overflow-hidden">
+        <div v-if="props.isExpanded && showCoverReflection" class="absolute top-[calc(100%+2px)] left-0 w-full h-[65%] pointer-events-none z-10 reflection-wrapper rounded-[inherit] overflow-hidden">
           <div class="absolute inset-0 reflection-glass rounded-[inherit] overflow-hidden">
             <img v-if="reflectionCoverUrl" :src="reflectionCoverUrl" class="absolute top-0 left-0 w-full aspect-square object-cover scale-y-[-1]" draggable="false" decoding="async" />
           </div>

@@ -63,6 +63,11 @@ describe('light lyric player model', () => {
     expect(source).toContain('v-if="wordEffect && line.words && line.words.length > 0"');
     expect(source).toContain('(props.wordEffect && activeLine.value?.words?.length)');
   });
+
+  it('keeps the active line statically lit when the word effect is disabled', () => {
+    expect(source).toContain('if (!props.wordEffect) {');
+    expect(source).toContain("return { '--line-progress': '100%' };");
+  });
 });
 
 describe('LightLyricPlayer component source', () => {

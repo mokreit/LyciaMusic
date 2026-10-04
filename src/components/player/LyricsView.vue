@@ -198,13 +198,15 @@ const renderModeExtraToggle = computed(() => (
       }
     : {
         label: '逐字效果',
-        hint: '按字逐个点亮，关闭后整行渐变',
+        hint: '按字逐个点亮，关闭后整行常亮',
         enabled: lyricsSettings.playerWordEffect,
         toggle: () => {
           lyricsSettings.playerWordEffect = !lyricsSettings.playerWordEffect;
         },
       }
 ));
+
+const showCoverReflection = computed(() => settingsStore.settings.showCoverReflection);
 
 function clampFontScale(value: number) {
   return Math.min(MAX_PLAYER_FONT_SCALE, Math.max(MIN_PLAYER_FONT_SCALE, value));
@@ -362,6 +364,10 @@ function toggleTranslation() {
 
 function toggleRomaji() {
   lyricsSettings.showRomaji = !lyricsSettings.showRomaji;
+}
+
+function toggleCoverReflection() {
+  settingsStore.patchSettings({ showCoverReflection: !showCoverReflection.value });
 }
 
 function handleFontScaleInput(event: Event) {
@@ -965,6 +971,31 @@ onUnmounted(() => {
               >
                 <path d="m6 9 6 6 6-6"/>
               </svg>
+            </button>
+          </div>
+
+          <div class="mt-6 mb-3">
+            <div class="text-[9px] font-semibold uppercase tracking-[0.3em] text-white/30">Cover</div>
+          </div>
+
+          <div class="flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <div class="text-[13px] font-medium text-white/85">封面倒影</div>
+              <div class="mt-0.5 text-[10px] leading-4 text-white/40">封面下方的玻璃倒影</div>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              :aria-checked="showCoverReflection"
+              title="封面倒影"
+              class="relative inline-flex h-6 w-11 flex-none items-center rounded-full transition-colors"
+              :class="showCoverReflection ? 'bg-white/80' : 'bg-white/15'"
+              @click="toggleCoverReflection"
+            >
+              <span
+                class="inline-block h-4 w-4 transform rounded-full transition duration-200 ease-in-out"
+                :class="showCoverReflection ? 'translate-x-6 bg-black/80' : 'translate-x-1 bg-white'"
+              />
             </button>
           </div>
 
