@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia';
 import { useCoverCache } from '../../composables/useCoverCache';
 import { usePlaybackController } from '../../features/playback/usePlaybackController';
 import { usePlaybackStore } from '../../features/playback/store';
+import { useSettings } from '../../features/settings/useSettings';
 import FooterContextMenu from "../overlays/FooterContextMenu.vue";
 
 const props = defineProps<{
@@ -15,7 +16,13 @@ const {
 } = usePlaybackController();
 const { getFullCoverUrl, loadFullCover, preloadFullCovers, retainFullCoverPaths } = useCoverCache();
 const playbackStore = usePlaybackStore();
+const { settings } = useSettings();
 const { playQueuePaths, tempQueuePaths } = storeToRefs(playbackStore);
+
+const showCoverReflection = computed(() => settings.value.showCoverReflection);
+const coverOffsetX = computed(() => settings.value.coverOffsetX);
+const coverOffsetY = computed(() => settings.value.coverOffsetY);
+const coverScale = computed(() => settings.value.coverScale);
 
 const showContextMenu = ref(false);
 const contextMenuX = ref(0);
@@ -170,7 +177,10 @@ defineExpose({ detailCoverRef });
         boxShadow: props.isExpanded && isPlaying
           ? `0 30px 60px -12px rgba(0,0,0,0.6), 0 18px 36px -18px rgba(0,0,0,0.7), 0 0 80px -20px ${dominantColors[0]}44` 
           : (props.isExpanded ? `0 10px 20px -5px rgba(0,0,0,0.4)` : 'none'),
-        transform: props.isExpanded ? (isPlaying ? 'scale(1)' : 'scale(1)') : 'scale(1)',
+        transform: props.isExpanded
+          ? `translate(${coverOffsetX}%, ${coverOffsetY}%) scale(1)`
+          : 'scale(1)',
+        width: props.isExpanded ? `calc(clamp(220px, 45vh, 580px) * ${coverScale})` : undefined,
         opacity: 1,
       }"
     >
@@ -187,7 +197,7 @@ defineExpose({ detailCoverRef });
 
       <!-- Glass Table Reflection Layer -->
       <transition name="reflection-reveal" appear>
-        <div v-if="props.isExpanded" class="absolute top-[calc(100%+2px)] left-0 w-full h-[65%] pointer-events-none z-10 reflection-wrapper rounded-[inherit] overflow-hidden">
+        <div v-if="props.isExpanded && showCoverReflection" class="absolute top-[calc(100%+2px)] left-0 w-full h-[65%] pointer-events-none z-10 reflection-wrapper rounded-[inherit] overflow-hidden">
           <div class="absolute inset-0 reflection-glass rounded-[inherit] overflow-hidden">
             <img v-if="reflectionCoverUrl" :src="reflectionCoverUrl" class="absolute top-0 left-0 w-full aspect-square object-cover scale-y-[-1]" draggable="false" decoding="async" />
           </div>

@@ -1,8 +1,17 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 
-import { createDefaultAppSettings, mergeAppSettings, useSettingsStore } from './store';
+import {
+  createDefaultAppSettings,
+  MAX_COVER_OFFSET_X,
+  MAX_COVER_SCALE,
+  MIN_COVER_OFFSET_Y,
+  MIN_COVER_SCALE,
+  mergeAppSettings,
+  useSettingsStore,
+} from './store';
 import type { EqualizerSettings } from '../../types';
+import { MAX_PLAYER_OFFSET_X } from '../../composables/lyrics/constants';
 
 // Helper: allows partial EqualizerSettings patches in tests
 const partialEq = (patch: Partial<EqualizerSettings>) => patch as EqualizerSettings;
@@ -291,7 +300,7 @@ describe('settings store', () => {
 
     expect(settingsStore.settings.lyrics.showTranslation).toBe(true);
     expect(settingsStore.settings.lyrics.showRomaji).toBe(true);
-    expect(settingsStore.settings.lyrics.playerOffsetX).toBe(30);
+    expect(settingsStore.settings.lyrics.playerOffsetX).toBe(MAX_PLAYER_OFFSET_X);
   });
 
   it('uses AMLL as the default player lyrics render mode', () => {
@@ -322,6 +331,54 @@ describe('settings store', () => {
     });
 
     expect(merged.lyrics.playerRenderMode).toBe('amll');
+  });
+
+  it('shows the cover reflection by default', () => {
+    const settingsStore = useSettingsStore();
+
+    expect(settingsStore.settings.showCoverReflection).toBe(true);
+  });
+
+  it('keeps a persisted cover reflection preference', () => {
+    const settingsStore = useSettingsStore();
+
+    const merged = mergeAppSettings(settingsStore.settings, {
+      showCoverReflection: false,
+    });
+
+    expect(merged.showCoverReflection).toBe(false);
+  });
+
+  it('defaults the cover position offsets to zero', () => {
+    const settingsStore = useSettingsStore();
+
+    expect(settingsStore.settings.coverOffsetX).toBe(0);
+    expect(settingsStore.settings.coverOffsetY).toBe(0);
+  });
+
+  it('clamps persisted cover position offsets', () => {
+    const settingsStore = useSettingsStore();
+
+    const merged = mergeAppSettings(settingsStore.settings, {
+      coverOffsetX: 999,
+      coverOffsetY: -999,
+    });
+
+    expect(merged.coverOffsetX).toBe(MAX_COVER_OFFSET_X);
+    expect(merged.coverOffsetY).toBe(MIN_COVER_OFFSET_Y);
+  });
+
+  it('defaults the cover scale to 100%', () => {
+    const settingsStore = useSettingsStore();
+
+    expect(settingsStore.settings.coverScale).toBe(1);
+  });
+
+  it('clamps the persisted cover scale', () => {
+    const settingsStore = useSettingsStore();
+
+    expect(mergeAppSettings(settingsStore.settings, { coverScale: 99 }).coverScale).toBe(MAX_COVER_SCALE);
+    expect(mergeAppSettings(settingsStore.settings, { coverScale: 0 }).coverScale).toBe(MIN_COVER_SCALE);
   });
 
   it('merges desktop lyrics settings while keeping the desktop defaults intact', () => {

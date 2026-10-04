@@ -350,6 +350,8 @@ export interface LyricsSettings {
   showTranslation: boolean;
   showRomaji: boolean;
   playerRenderMode: LyricsPlayerRenderMode;
+  playerEnableBlur: boolean;
+  playerWordEffect: boolean;
   playerFontScale: number;
   playerLineGap: number;
   playerOffsetX: number;
@@ -456,6 +458,10 @@ export interface AppSettings {
   showDesktopLyrics: boolean;
   showQualityBadges: boolean;
   showSongComments: boolean;
+  showCoverReflection: boolean;
+  coverOffsetX: number;
+  coverOffsetY: number;
+  coverScale: number;
   enableScrollToTopButton: boolean;
   libraryMinDurationSeconds: number;
   // Deprecated compat field. Retained only for legacy config deserialization.

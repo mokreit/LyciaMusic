@@ -10,6 +10,7 @@ import { useToast } from '../../composables/toast';
 import { windowApi } from '../../services/tauri/windowApi';
 import type { SongDetail } from '../../types';
 import LyricsView from './LyricsView.vue';
+import CoverStylePanel from './CoverStylePanel.vue';
 import PlayerDetailBackground from './PlayerDetailBackground.vue';
 import PlayerDetailLeft from './PlayerDetailLeft.vue';
 import QueueList from './QueueList.vue';
@@ -497,7 +498,7 @@ const metaInfo = computed(() => {
         <div class="pointer-events-none h-full w-[40%] min-w-[300px]"></div>
 
         <div
-          class="flex h-full min-h-0 flex-1 flex-col justify-center pt-0 pb-0 pl-2 pr-8"
+          class="relative flex h-full min-h-0 flex-1 flex-col justify-center pt-0 pb-0 pl-2 pr-8"
           :style="staggerStyle(2, 'X', 20)"
         >
           <transition name="fade-scale" mode="out-in">
@@ -525,6 +526,8 @@ const metaInfo = computed(() => {
               </div>
             </transition>
           </transition>
+
+          <CoverStylePanel v-if="showPlayerDetail" />
         </div>
       </div>
     </div>

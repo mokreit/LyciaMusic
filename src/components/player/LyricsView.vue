@@ -60,6 +60,9 @@ const { audioDelay } = storeToRefs(settingsStore);
 const FONT_SCALE_STEP = 0.05;
 const LINE_GAP_STEP = 0.05;
 const OFFSET_STEP = 1;
+const LYRICS_SYNC_OFFSET_STEP = 10;
+const MIN_LYRICS_SYNC_OFFSET_MS = -1000;
+const MAX_LYRICS_SYNC_OFFSET_MS = 1000;
 const DRAFT_LYRICS_SETTINGS_COMMIT_DELAY_MS = 180;
 const FONT_FILE_FILTERS = [{ name: 'Font', extensions: ['ttf', 'otf'] }];
 type FontPresetMenuMode = 'system' | 'custom';
@@ -162,6 +165,47 @@ const lyricsPlayerStyle = computed(() => ({
 const lyricsLayoutVersion = computed(() => `${lyricsSettings.playerFontPreset}:${importedLyricsFontsRevision.value}`);
 const shouldReduceLyricsRendering = computed(() => isMainWindowLowPower.value || !showPlayerDetail.value);
 
+const lyricsSyncOffsetMs = computed({
+  get: () => Math.round(settingsStore.settings.lyricsSyncOffset * 1000),
+  set: (value: number | string) => {
+    const numericValue = typeof value === 'string' ? Number(value) : value;
+    settingsStore.patchSettings({
+      lyricsSyncOffset: clampLyricsSyncOffsetMs(numericValue) / 1000,
+    });
+  },
+});
+
+const lyricsSyncOffsetLabel = computed(() => {
+  const offset = lyricsSyncOffsetMs.value;
+  if (offset === 0) return '0 ms';
+  return `${offset > 0 ? '+' : ''}${offset} ms`;
+});
+
+const lyricsSyncOffsetProgress = computed(() => (
+  ((lyricsSyncOffsetMs.value - MIN_LYRICS_SYNC_OFFSET_MS)
+    / (MAX_LYRICS_SYNC_OFFSET_MS - MIN_LYRICS_SYNC_OFFSET_MS)) * 100
+));
+
+const renderModeExtraToggle = computed(() => (
+  lyricsSettings.playerRenderMode === 'amll'
+    ? {
+        label: '模糊效果',
+        hint: '非当前行渐变模糊',
+        enabled: lyricsSettings.playerEnableBlur,
+        toggle: () => {
+          lyricsSettings.playerEnableBlur = !lyricsSettings.playerEnableBlur;
+        },
+      }
+    : {
+        label: '逐字效果',
+        hint: '按字逐个点亮，关闭后整行常亮',
+        enabled: lyricsSettings.playerWordEffect,
+        toggle: () => {
+          lyricsSettings.playerWordEffect = !lyricsSettings.playerWordEffect;
+        },
+      }
+));
+
 function clampFontScale(value: number) {
   return Math.min(MAX_PLAYER_FONT_SCALE, Math.max(MIN_PLAYER_FONT_SCALE, value));
 }
@@ -176,6 +220,14 @@ function clampOffsetX(value: number) {
 
 function clampOffsetY(value: number) {
   return Math.min(MAX_PLAYER_OFFSET_Y, Math.max(MIN_PLAYER_OFFSET_Y, value));
+}
+
+function clampLyricsSyncOffsetMs(value: number) {
+  if (!Number.isFinite(value)) return 0;
+  return Math.min(
+    MAX_LYRICS_SYNC_OFFSET_MS,
+    Math.max(MIN_LYRICS_SYNC_OFFSET_MS, Math.round(value / LYRICS_SYNC_OFFSET_STEP) * LYRICS_SYNC_OFFSET_STEP),
+  );
 }
 
 function formatOffsetValue(value: number) {
@@ -294,6 +346,10 @@ function resetPlayerOffsetX() {
 
 function resetPlayerOffsetY() {
   setPlayerOffsetY(DEFAULT_PLAYER_OFFSET_Y);
+}
+
+function resetLyricsSyncOffset() {
+  lyricsSyncOffsetMs.value = 0;
 }
 
 function resetPlayerFontPreset() {
@@ -559,6 +615,27 @@ onUnmounted(() => {
             </button>
           </div>
 
+          <div class="mt-4 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <div class="text-[13px] font-medium text-white/85">{{ renderModeExtraToggle.label }}</div>
+              <div class="mt-0.5 text-[10px] leading-4 text-white/40">{{ renderModeExtraToggle.hint }}</div>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              :aria-checked="renderModeExtraToggle.enabled"
+              :title="renderModeExtraToggle.label"
+              class="relative inline-flex h-6 w-11 flex-none items-center rounded-full transition-colors"
+              :class="renderModeExtraToggle.enabled ? 'bg-white/80' : 'bg-white/15'"
+              @click="renderModeExtraToggle.toggle()"
+            >
+              <span
+                class="inline-block h-4 w-4 transform rounded-full transition duration-200 ease-in-out"
+                :class="renderModeExtraToggle.enabled ? 'translate-x-6 bg-black/80' : 'translate-x-1 bg-white'"
+              />
+            </button>
+          </div>
+
           <div class="mt-6 mb-3">
             <div class="text-[9px] font-semibold uppercase tracking-[0.3em] text-white/30">Lyrics</div>
             <div class="mt-1.5 flex items-center justify-between">
@@ -749,6 +826,15 @@ onUnmounted(() => {
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                 </button>
+                <button
+                  v-if="lyricsSyncOffsetMs !== 0"
+                  type="button"
+                  class="flex h-5 w-5 items-center justify-center rounded-full text-white/40 transition hover:bg-white/10 hover:text-white"
+                  @click="resetLyricsSyncOffset"
+                  title="重置歌词延迟"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                </button>
               </div>
             </div>
           </div>
@@ -787,6 +873,23 @@ onUnmounted(() => {
                 :value="previewPlayerOffsetY"
                 @input="handleOffsetYInput"
                 @change="commitDraftLyricsSettings"
+              />
+            </div>
+
+            <div>
+              <div class="mb-2 flex items-center justify-between gap-3">
+                <span class="text-[12px] font-medium text-white/70">歌词延迟</span>
+                <span class="text-[11px] font-medium tabular-nums text-white/48">{{ lyricsSyncOffsetLabel }}</span>
+              </div>
+              <input
+                v-model="lyricsSyncOffsetMs"
+                class="font-size-slider h-1 w-full cursor-pointer appearance-none rounded-full"
+                :style="{ background: `linear-gradient(to right, rgba(255,255,255,0.85) ${lyricsSyncOffsetProgress}%, rgba(255,255,255,0.12) ${lyricsSyncOffsetProgress}%)` }"
+                type="range"
+                :min="MIN_LYRICS_SYNC_OFFSET_MS"
+                :max="MAX_LYRICS_SYNC_OFFSET_MS"
+                :step="LYRICS_SYNC_OFFSET_STEP"
+                title="正值让歌词更晚显示，负值让歌词更早显示"
               />
             </div>
           </div>
@@ -890,7 +993,7 @@ onUnmounted(() => {
           align-anchor="center"
           :align-position="0.42"
           :enable-spring="true"
-          :enable-blur="true"
+          :enable-blur="lyricsSettings.playerEnableBlur"
           :enable-scale="true"
           :hide-passed-lines="false"
           :word-fade-width="0.5"
@@ -905,6 +1008,7 @@ onUnmounted(() => {
           :playing="isPlaying && !shouldReduceLyricsRendering"
           :show-translation="lyricsSettings.showTranslation"
           :show-romaji="lyricsSettings.showRomaji"
+          :word-effect="lyricsSettings.playerWordEffect"
           :line-gap="previewPlayerLineGap"
           :title="currentSong?.title || currentSong?.name"
           :artist="currentSong?.artist"
@@ -1238,31 +1342,6 @@ onUnmounted(() => {
   background: rgba(236, 65, 65, 0.2);
   color: rgba(255, 255, 255, 0.96);
   outline: none;
-}
-
-.font-size-slider::-webkit-slider-thumb {
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  border-radius: 9999px;
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0,0,0,0.05);
-}
-
-.font-size-slider::-moz-range-thumb {
-  appearance: none;
-  width: 12px;
-  height: 12px;
-  border: 0;
-  border-radius: 9999px;
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0,0,0,0.05);
-}
-
-.font-size-slider::-moz-range-track {
-  height: 4px;
-  border-radius: 9999px;
-  background: transparent;
 }
 
 .lyric-style-panel {

@@ -57,6 +57,17 @@ describe('light lyric player model', () => {
     expect(resolveLightLyricLineProgress(lines[1], lines[2], 1.25)).toBe(0.25);
     expect(resolveLightLyricLineProgress(lines[1], lines[2], 2.5)).toBe(1);
   });
+
+  it('gates the word-by-word fill behind the word effect prop', () => {
+    expect(source).toContain('wordEffect?: boolean;');
+    expect(source).toContain('v-if="wordEffect && line.words && line.words.length > 0"');
+    expect(source).toContain('(props.wordEffect && activeLine.value?.words?.length)');
+  });
+
+  it('keeps the active line statically lit when the word effect is disabled', () => {
+    expect(source).toContain('if (!props.wordEffect) {');
+    expect(source).toContain("return { '--line-progress': '100%' };");
+  });
 });
 
 describe('LightLyricPlayer component source', () => {

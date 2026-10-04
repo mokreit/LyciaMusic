@@ -127,11 +127,25 @@ export const defaultAudioSettings: AudioSettings = {
   showEqualizerInFooter: true,
 };
 
+export const DEFAULT_COVER_OFFSET_X = 0;
+export const MIN_COVER_OFFSET_X = -60;
+export const MAX_COVER_OFFSET_X = 60;
+export const DEFAULT_COVER_OFFSET_Y = 0;
+export const MIN_COVER_OFFSET_Y = -50;
+export const MAX_COVER_OFFSET_Y = 50;
+export const DEFAULT_COVER_SCALE = 1;
+export const MIN_COVER_SCALE = 0.5;
+export const MAX_COVER_SCALE = 2;
+
 export const defaultAppSettings: AppSettings = {
   closeToTray: true,
   showDesktopLyrics: false,
   showQualityBadges: true,
   showSongComments: true,
+  showCoverReflection: true,
+  coverOffsetX: DEFAULT_COVER_OFFSET_X,
+  coverOffsetY: DEFAULT_COVER_OFFSET_Y,
+  coverScale: DEFAULT_COVER_SCALE,
   enableScrollToTopButton: true,
   libraryMinDurationSeconds: 0,
   // Deprecated compat field. Main folder-source behavior no longer depends on it.
@@ -186,6 +200,27 @@ export const normalizeLibraryMinDurationSeconds = (
   }
 
   return Math.round(numericValue);
+};
+
+export const clampCoverOffsetX = (value: number | null | undefined): number => {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) return DEFAULT_COVER_OFFSET_X;
+
+  return Math.min(MAX_COVER_OFFSET_X, Math.max(MIN_COVER_OFFSET_X, Math.round(numericValue)));
+};
+
+export const clampCoverOffsetY = (value: number | null | undefined): number => {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) return DEFAULT_COVER_OFFSET_Y;
+
+  return Math.min(MAX_COVER_OFFSET_Y, Math.max(MIN_COVER_OFFSET_Y, Math.round(numericValue)));
+};
+
+export const clampCoverScale = (value: number | null | undefined): number => {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) return DEFAULT_COVER_SCALE;
+
+  return Math.min(MAX_COVER_SCALE, Math.max(MIN_COVER_SCALE, numericValue));
 };
 
 export const createDefaultAppSettings = (): AppSettings => ({
@@ -303,6 +338,9 @@ export const mergeAppSettings = (
     libraryMinDurationSeconds: normalizeLibraryMinDurationSeconds(
       libraryMinDurationSeconds ?? base.libraryMinDurationSeconds,
     ),
+    coverOffsetX: clampCoverOffsetX(rest.coverOffsetX ?? base.coverOffsetX),
+    coverOffsetY: clampCoverOffsetY(rest.coverOffsetY ?? base.coverOffsetY),
+    coverScale: clampCoverScale(rest.coverScale ?? base.coverScale),
     lyrics: mergeLyricsSettings(base.lyrics, patch.lyrics ?? {}),
     desktopLyrics: mergeDesktopLyricsSettings(base.desktopLyrics, patch.desktopLyrics ?? {}),
     audio: mergeAudioSettings(base.audio ?? createDefaultAudioSettings(), patch.audio ?? {}),
