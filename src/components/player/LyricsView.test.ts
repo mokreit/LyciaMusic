@@ -65,6 +65,25 @@ describe('LyricsView custom font import', () => {
     expect(source).toContain('setPlayerRenderMode');
   });
 
+  it('offers a render-mode aware effect switch next to the mode buttons', () => {
+    expect(source).toContain('renderModeExtraToggle');
+    expect(source).toContain('模糊效果');
+    expect(source).toContain('逐字效果');
+    expect(source).toContain('role="switch"');
+  });
+
+  it('binds the AMLL blur and light word effects to persisted lyrics settings', () => {
+    expect(source).toContain(':enable-blur="lyricsSettings.playerEnableBlur"');
+    expect(source).toContain(':word-effect="lyricsSettings.playerWordEffect"');
+  });
+
+  it('adds a lyrics delay slider backed by the global lyrics sync offset', () => {
+    expect(source).toContain('lyricsSyncOffsetMs');
+    expect(source).toContain('MIN_LYRICS_SYNC_OFFSET_MS');
+    expect(source).toContain('lyricsSyncOffset: clampLyricsSyncOffsetMs(numericValue) / 1000');
+    expect(source).toContain('resetLyricsSyncOffset');
+  });
+
   it('switches the player lyrics renderer based on the persisted render mode', () => {
     expect(source).toContain('LightLyricPlayer');
     expect(source).toContain("import AmlLyricPlayer from './AmlLyricPlayer.vue'");

@@ -350,6 +350,8 @@ export interface LyricsSettings {
   showTranslation: boolean;
   showRomaji: boolean;
   playerRenderMode: LyricsPlayerRenderMode;
+  playerEnableBlur: boolean;
+  playerWordEffect: boolean;
   playerFontScale: number;
   playerLineGap: number;
   playerOffsetX: number;

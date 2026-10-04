@@ -17,6 +17,7 @@ const props = withDefaults(defineProps<{
   playing?: boolean;
   showTranslation?: boolean;
   showRomaji?: boolean;
+  wordEffect?: boolean;
   lineGap?: number;
   title?: string;
   artist?: string;
@@ -27,6 +28,7 @@ const props = withDefaults(defineProps<{
   playing: true,
   showTranslation: true,
   showRomaji: false,
+  wordEffect: true,
   lineGap: 1,
   title: '',
   artist: '',
@@ -210,7 +212,7 @@ function getWordStyle(visibleIndex: number, wordIndex: number) {
 }
 
 function getLineFillStyle(visibleIndex: number) {
-  if (visibleIndex !== activeLineIndex.value || activeLine.value?.words?.length) {
+  if (visibleIndex !== activeLineIndex.value || (props.wordEffect && activeLine.value?.words?.length)) {
     return { '--line-progress': '0%' };
   }
 
@@ -389,7 +391,7 @@ onBeforeUnmount(() => {
           @click="handleLineClick(line)"
         >
           <span class="light-lyric-main">
-            <template v-if="line.words && line.words.length > 0">
+            <template v-if="wordEffect && line.words && line.words.length > 0">
               <span
                 v-for="{ word, index: wordIndex } in getLightLyricRenderableWords(line)"
                 :key="`${wordIndex}:${word.start}:${word.text}`"
@@ -427,7 +429,7 @@ onBeforeUnmount(() => {
           @click="handleLineClick(line)"
         >
           <span class="light-lyric-main">
-            <template v-if="line.words && line.words.length > 0">
+            <template v-if="wordEffect && line.words && line.words.length > 0">
               <span
                 v-for="{ word, index: wordIndex } in getLightLyricRenderableWords(line)"
                 :key="`${wordIndex}:${word.start}:${word.text}`"

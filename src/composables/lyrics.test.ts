@@ -1066,6 +1066,23 @@ describe('lyrics settings normalization', async () => {
     expect(normalized.playerOffsetY).toBe(MIN_PLAYER_OFFSET_Y);
   });
 
+  it('defaults the player blur and word effects to enabled', () => {
+    const normalized = normalizeLyricsSettingsPatch({});
+
+    expect(normalized.playerEnableBlur).toBe(true);
+    expect(normalized.playerWordEffect).toBe(true);
+  });
+
+  it('preserves explicit player blur and word effect toggles', () => {
+    const normalized = normalizeLyricsSettingsPatch({
+      playerEnableBlur: false,
+      playerWordEffect: false,
+    });
+
+    expect(normalized.playerEnableBlur).toBe(false);
+    expect(normalized.playerWordEffect).toBe(false);
+  });
+
   it('defaults desktop auto-hide on fullscreen to enabled', () => {
     const normalized = normalizeDesktopLyricsSettingsPatch({});
 

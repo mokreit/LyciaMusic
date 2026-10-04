@@ -28,6 +28,8 @@ export const DEFAULT_PLAYER_ALIGNMENT: LyricsPlayerAlignment = 'left';
 export const DEFAULT_DESKTOP_PLAYER_ALIGNMENT: DesktopLyricsPlayerAlignment = 'center';
 export const DEFAULT_PLAYER_FONT_PRESET: LyricsFontPreset = 'system';
 export const DEFAULT_PLAYER_RENDER_MODE: LyricsPlayerRenderMode = 'amll';
+export const DEFAULT_PLAYER_ENABLE_BLUR = true;
+export const DEFAULT_PLAYER_WORD_EFFECT = true;
 export const DEFAULT_DESKTOP_CUSTOM_PLAYED_COLOR = '#EC4141';
 export const DEFAULT_DESKTOP_CUSTOM_UNPLAYED_COLOR = '#FFFFFF';
 export const DEFAULT_DESKTOP_CUSTOM_ROMAJI_PLAYED_COLOR = '#BFDBFE';
@@ -106,6 +108,8 @@ export const defaultLyricsSettings: LyricsSettings = {
   showTranslation: true,
   showRomaji: false,
   playerRenderMode: DEFAULT_PLAYER_RENDER_MODE,
+  playerEnableBlur: DEFAULT_PLAYER_ENABLE_BLUR,
+  playerWordEffect: DEFAULT_PLAYER_WORD_EFFECT,
   playerFontScale: DEFAULT_PLAYER_FONT_SCALE,
   playerLineGap: DEFAULT_PLAYER_LINE_GAP,
   playerOffsetX: DEFAULT_PLAYER_OFFSET_X,
@@ -300,6 +304,12 @@ export function normalizeLyricsSettingsPatch(patch: Partial<LyricsSettings>): Ly
       ? patch.showRomaji
       : defaultLyricsSettings.showRomaji,
     playerRenderMode: normalizeLyricsPlayerRenderMode(patch.playerRenderMode),
+    playerEnableBlur: typeof patch.playerEnableBlur === 'boolean'
+      ? patch.playerEnableBlur
+      : defaultLyricsSettings.playerEnableBlur,
+    playerWordEffect: typeof patch.playerWordEffect === 'boolean'
+      ? patch.playerWordEffect
+      : defaultLyricsSettings.playerWordEffect,
     playerFontScale: clampPlayerFontScale(patch.playerFontScale ?? DEFAULT_PLAYER_FONT_SCALE),
     playerLineGap: clampPlayerLineGap(patch.playerLineGap ?? DEFAULT_PLAYER_LINE_GAP),
     playerOffsetX: clampPlayerOffsetX(patch.playerOffsetX ?? DEFAULT_PLAYER_OFFSET_X),
