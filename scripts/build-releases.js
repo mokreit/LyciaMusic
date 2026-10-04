@@ -32,6 +32,14 @@ async function main() {
   const originalConfigContent = fs.readFileSync(tauriConfigPath, 'utf8');
   const originalConfig = JSON.parse(originalConfigContent);
 
+  // 1.1 Ensure WebView2Loader.dll is bundled (GNU toolchain does not embed it automatically)
+  const webviewLoaderSource = path.join(rootDir, 'src-tauri', 'target', 'release', 'WebView2Loader.dll');
+  if (!fs.existsSync(webviewLoaderSource)) {
+    throw new Error(`未找到 WebView2Loader.dll: ${webviewLoaderSource}，请先运行一次 cargo build --release`);
+  }
+  const webviewLoaderStaging = path.join(rootDir, 'src-tauri', 'WebView2Loader.dll');
+  fs.copyFileSync(webviewLoaderSource, webviewLoaderStaging);
+
   // Ensure output directory exists
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
@@ -73,6 +81,7 @@ async function main() {
         type: target.type
       };
       config.bundle.targets = ["nsis"];
+    config.bundle.resources = ["WebView2Loader.dll"];
       writeJson(tauriConfigPath, config);
 
       // Clean old bundle output directory to avoid picking up old files
@@ -131,6 +140,9 @@ async function main() {
     // Restore tauri.conf.json
     console.log('正在恢复 original tauri.conf.json...');
     fs.writeFileSync(tauriConfigPath, originalConfigContent, 'utf8');
+    if (fs.existsSync(webviewLoaderStaging)) {
+      fs.rmSync(webviewLoaderStaging, { force: true });
+    }
   }
 }
 

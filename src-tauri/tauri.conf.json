@@ -36,6 +36,7 @@
   },
   "bundle": {
     "active": true,
+      "resources": [],
     "targets": "all",
     "copyright": "Copyright © 2025 Lycia Player Team",
     "shortDescription": "A beautiful local music player powered by Tauri.",
