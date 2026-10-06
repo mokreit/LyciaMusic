@@ -132,7 +132,7 @@ watch(() => props.isExpanded, (isExpanded) => {
   reflectionCoverUrl.value = '';
 });
 
-watch([currentSongPath, currentLocalCoverUrl, () => props.isExpanded], ([path, localUrl, isExpanded]) => {
+watch([currentSongPath, currentLocalCoverUrl, currentBigCoverUrl, () => props.isExpanded], ([path, localUrl, bigUrl, isExpanded]) => {
   if (!path) {
     reflectionCoverUrl.value = '';
     return;
@@ -143,7 +143,7 @@ watch([currentSongPath, currentLocalCoverUrl, () => props.isExpanded], ([path, l
     return;
   }
 
-  const nextReflectionUrl = localUrl || '';
+  const nextReflectionUrl = localUrl || bigUrl || '';
   if (nextReflectionUrl === reflectionCoverUrl.value) {
     return;
   }
@@ -199,7 +199,11 @@ defineExpose({ detailCoverRef });
       <transition name="reflection-reveal" appear>
         <div v-if="props.isExpanded && showCoverReflection" class="absolute top-[calc(100%+2px)] left-0 w-full h-[65%] pointer-events-none z-10 reflection-wrapper rounded-[inherit] overflow-hidden">
           <div class="absolute inset-0 reflection-glass rounded-[inherit] overflow-hidden">
-            <img v-if="reflectionCoverUrl" :src="reflectionCoverUrl" class="absolute top-0 left-0 w-full aspect-square object-cover scale-y-[-1]" draggable="false" decoding="async" />
+            <transition name="song-switch-cover" mode="out-in">
+              <div :key="currentSongPath" class="w-full h-full relative">
+                <img v-if="reflectionCoverUrl" :src="reflectionCoverUrl" class="absolute top-0 left-0 w-full aspect-square object-cover scale-y-[-1] transition-opacity duration-[240ms] ease-out" draggable="false" decoding="async" />
+              </div>
+            </transition>
           </div>
         </div>
       </transition>
